@@ -1,0 +1,89 @@
+---
+title: "Akula-DATA606-Lab1"
+author: "Pavan Akula"
+date: "February 3, 2017"
+output: html_document
+---
+Following command loads data from cdc.R located in working directory/more folder and also creates data frame "cdc".
+```{r load-data, eval=TRUE}
+source("more/cdc.R")
+```
+Q 1: Make a scatterplot of weight versus desired weight. Describe the relationship between these two variables.
+A: Following command creates scatterplot of weight versus desired weight
+```{r col-names, eval=TRUE}
+names(cdc)
+```
+```{r plot-wt, eval=TRUE}
+plot(x = cdc$wtdesire, y = cdc$weight, ylab = "Current Weight", xlab = "Desired Weight")
+```
+Scatterplot shows that there is big cluster of black circles between points (100,100) and (250,300). This means there is positive relation between weight and wtdesire. As Weight coordinate is increasing Desired Weight coordinate is decreasing. To conclude, as weight is increasing, desire to lose weight is also increasing. We can also show it by adding liner regression line to the plot.
+```{r plot-wt1, eval=TRUE}
+plot(x = cdc$wtdesire, y = cdc$weight, ylab = "Current Weight", xlab = "Desired Weight")
+abline(lm(cdc$weight ~ cdc$wtdesire, data = cdc), col="blue")
+```
+```{r val-reg, eval=TRUE}
+lm(cdc$weight ~ cdc$wtdesire, data = cdc)
+```
+This tells us slope is 1(rounded to 0) and intercept is 14.
+
+Q 2: Let's consider a new variable: the difference between desired weight (wtdesire) and current weight (weight). Create this new variable by subtracting the two columns in the data frame and assigning them to a new object called wdiff.
+
+A: We can add new computed column to curret data frame by using following method.
+```{r wt-dif, eval=TRUE}
+cdc$wdiff <- cdc$wtdesire - cdc$weight
+```
+
+Q 3: What type of data is wdiff? If an observation wdiff is 0, what does this mean about the person's weight and desired weight. What if  wdiff is positive or negative?
+
+A: Structure command will tell us data type of each column. wdiff is int data type.
+```{r cdc-str, eval=TRUE}
+str(cdc)
+```
+```{r val-wdiff, eval=TRUE}
+cdc$wdiff
+```
+If wdiff value is 0 person is satisfied with their weight. If wdiff value is negative person wants to lose weight and if positive person wants to gain weight.
+
+Q 4: Describe the distribution of wdiff in terms of its center, shape, and spread, including any plots you use. What does this tell us about how people feel about their current weight?
+
+A: wdiff distribution can be visualized using histogram. It can also be explained by summary command.
+```{r v-hist, eval=TRUE}
+hist(cdc$wdiff, breaks = 50)
+```
+
+```{r wdiff-summary, eval=TRUE}
+summary(cdc$wdiff)
+```
+Since median and mean are negative, it tells that people want to lose 10 to 15 pounds(rounded to 0). Histogram is skewed to left describing there are more people who want to lose weight and fewer people who want to gain weight.
+
+Q 5: Using numerical summaries and a side-by-side box plot, determine if men tend to view their weight differently than women.
+
+A: Summary for men
+```{r wdiff-summary-men, eval=TRUE}
+summary(subset(cdc$wdiff, cdc$gender == "m"))
+```
+Summary for women
+```{r wdiff-summary-women, eval=TRUE}
+summary(subset(cdc$wdiff, cdc$gender == "f"))
+```
+Box plot
+```{r wdiff-summary-boxplot, eval=TRUE}
+boxplot(cdc$wdiff ~ cdc$gender)
+```
+
+Men have median and mean as -5 and -11 and women have median and mean as -10 and -18 (rounded to 0). This tells us women want to lose more pounds than men. 
+
+Q 6: Now it's time to get creative. Find the mean and standard deviation of weight and determine what proportion of the weights are within one standard deviation of the mean.
+```{r wt-mean-sd, eval=TRUE}
+mean(cdc$weight)
+sd(cdc$weight)
+```
+Number of people with weight that falls within one standard deviation
+```{r wt-prt, eval=TRUE}
+numWithinSD <- subset(cdc, cdc$weight < (mean(cdc$weight) + sd(cdc$weight)) & cdc$weight > (mean(cdc$weight) - sd(cdc$weight)))
+(dim(numWithinSD)[1]/dim(cdc)[1]) * 100
+```
+There are 71% of people with weights that are within one standard deviation of the mean.
+
+
+
